@@ -1,0 +1,16 @@
+doctype html
+html
+head
+  meta(charset="utf-8")
+  link(rel="stylesheet", href="/css/style.css")
+  script(src="/js/main.js", defer)
+
+body
+  .preview
+  .picker-container
+    input.inp-red(type="range", max="255")
+    input.inp-green(type="range", max="255")
+    input.inp-blue(type="range", max="255")
+    input.inp-alpha(type="range", max="1", steps=".01")
+  button.add-fav
+  .fav-cols
