@@ -10,8 +10,7 @@ const color = new Proxy({
 
   update(clr) {
     const rgba = toRGBA(clr, 1);
-    [this.r, this.g, this.b] = [...rgba];
-    this.a = rgba[3] || 1;
+    [this.r, this.g, this.b, this.a] = [...rgba];
   },
 
   setSliders() {
@@ -35,9 +34,28 @@ const color = new Proxy({
   }
 });
 
+const flags = {
+  deleteSw : 0
+}
+
 const colorInput = document.querySelector(".color-value");
 const preview = document.querySelector(".preview");
 const swContainer = document.querySelector(".sw-colors-container");
+
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "/getswatches", false);
+xhr.send();
+
+let colorData;
+if (xhr.status === 200) colorData = JSON.parse(xhr.responseText);
+
+fetch("/getswatches")
+  .then(res => res.json())
+  .then(res => {
+    res.colors.forEach(addSwatch);
+    colorData = res;
+  })
+  .catch(console.error);
 
 function pick(clr=color.rgba) {
   color.pick(clr);
@@ -52,9 +70,11 @@ function toRGBA(clr, arr=0) {
   div.style.background = clr;
   document.body.append(div);
   const color = getComputedStyle(div).getPropertyValue("background-color");
+  const comps = color.replace(/rgba?/, "").replace(/[\(\)\s]/g, "").split(",").map(c => +c)
+  if (!comps[3]) comps.push(1);
   div.remove();
 
-  return arr ? color.replace(/rgba?/, "").replace(/[\(\)\s]/g, "").split(",").map(c => +c) : color;
+  return arr ? comps : `rgba(${comps[0]}, ${comps[1]}, ${comps[2]}, ${comps[3]})`;
 }
 
 document.querySelectorAll(".picker-container > input[type='range']").forEach((slider, i) => {
@@ -87,13 +107,25 @@ function addSwatch(clr) {
   swContainer.append(sw);
 
   sw.addEventListener("click", function() {
+    if (flags.deleteSw) removeSwatch(this.dataset.color);
+
     color.update(clr);
     color.pick(clr);
-    color.setSlider();
+    color.setSliders();
   });
 }
 
+function removeSwatch(clr) {
+  const idx = colorData.colors.findIndex(c => c === clr);
+  colorData.colors.splice(idx, 1);
+  const elem = [...swContainer.querySelectorAll(".sw-color")].find(elem => elem.dataset.color === clr);
+  elem.remove();
+  
+  fetch("/deleteswatch/" + idx, { method : "DELETE" })
+}
+
 document.querySelector(".add-fav").addEventListener("click", function() {
+  if (colorData.colors.includes(color.rgba)) return;
   fetch("/addfav", {
     method : "POST",
     headers: {
@@ -103,11 +135,14 @@ document.querySelector(".add-fav").addEventListener("click", function() {
       color: color.rgba
     })
   })
-  // .then(res => res.text())
-  // .then(console.log);
+    .then(res => res.text())
+    .then(() => {
+      addSwatch(color.rgba);
+    })
+    .catch(console.error);
 });
 
-// for (let i = 0; i < 100; i++) {
-//   const clr = `rgb(${Math.random() *255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-//   addSwatch(clr);
-// }
+document.querySelector(".delete-fav").addEventListener("click", function() {
+  this.classList.toggle("active");
+  flags.deleteSw = !flags.deleteSw;
+});

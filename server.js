@@ -10,6 +10,23 @@ const server = https.createServer({
   cert: fs.readFileSync("./certs/server.cert"),
 }, app);
 
+fs.ensureFile("colors.json")
+  .catch(console.error);
+
+let colorData = fs.readFileSync("./colors.json").toString();
+
+if (!colorData) {
+  try {
+    fs.writeJsonSync("./colors.json", {"colors" : []});
+    colorData = '{"colors": []}';
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+colorData = JSON.parse(colorData);
+// console.log(colorData.colors);
+
 app.set("view engine", "pug");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
@@ -19,8 +36,33 @@ app.get("/", (_, res) => {
   res.render("index");
 });
 
+app.get("/getswatches", (_, res) => {
+  res.send(colorData);
+});
+
 app.post("/addfav", (req, res) => {
-  
+  const color = req.body.color;
+  colorData.colors.push(color);
+
+  try {
+    fs.writeJsonSync("colors.json", colorData);
+  } catch (err) {
+    console.error(err);
+  }
+
+  res.send();
+});
+
+app.delete("/deleteswatch/:id", (req, res) => {
+  colorData.colors.splice(req.params.id, 1);
+
+  try {
+    fs.writeJsonSync("colors.json", colorData);
+  } catch (err) {
+    console.error(err);
+  }
+
+  res.send();
 });
 
 server.listen(5500, () => {

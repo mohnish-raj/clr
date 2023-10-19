@@ -54,10 +54,12 @@ body > div {
   position: relative;
   padding: 0 1rem;
 }
-.swatches .add-fav {
-  margin: 1rem 0;
-  height: 2rem;
-  width: 2rem;
+.swatches .sw-btns {
+  display: flex;
+  gap: 1rem;
+}
+.swatches .sw-btns > button {
+  padding: 1rem;
   display: grid;
   place-items: center;
   border: 0;
@@ -65,10 +67,10 @@ body > div {
   cursor: pointer;
   border-radius: 0.2rem;
 }
-.swatches .add-fav:hover {
-  filter: brightness(1.2);
+.swatches .sw-btns > button:hover {
+  filter: brightness(0.9);
 }
-.swatches .add-fav:active {
+.swatches .sw-btns > button:active {
   filter: brightness(0.8);
 }
 .swatches .sw-colors-container {
