@@ -21,14 +21,11 @@ body > div {
   display: none;
 }
 
-* {
-  border: 1px solid red;
-}
-
 .preview {
   padding: 1rem;
   outline: black solid 1pt;
-  outline-offset: -1rem;
+  outline-offset: -0.5rem;
+  border-radius: 1rem;
 }
 
 .picker-container {
@@ -44,9 +41,10 @@ body > div {
 
 .swatches {
   position: relative;
+  padding: 0 1rem;
 }
 .swatches .add-fav {
-  margin: 1rem;
+  margin: 1rem 0;
   height: 2rem;
   width: 2rem;
   display: grid;
