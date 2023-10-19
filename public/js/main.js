@@ -12,7 +12,6 @@ const color = new Proxy({
     const rgba = toRGBA(clr, 1);
     [this.r, this.g, this.b] = [...rgba];
     this.a = rgba[3] || 1;
-    console.log(color.rgba);
   },
 
   setSliders() {
@@ -38,7 +37,15 @@ const color = new Proxy({
 
 const colorInput = document.querySelector(".color-value");
 const preview = document.querySelector(".preview");
-color.pick("white");
+const swContainer = document.querySelector(".sw-colors-container");
+
+function pick(clr=color.rgba) {
+  color.pick(clr);
+  color.update(clr);
+  color.setSliders();
+}
+
+pick("white");
 
 function toRGBA(clr, arr=0) {
   const div = document.createElement("div");
@@ -63,3 +70,44 @@ colorInput.addEventListener("change", function() {
   color.update(this.value);
   color.setSliders();
 });
+
+preview.addEventListener("dblclick", function() {
+  const clr = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+  color.pick(clr);
+  color.update(clr);
+  color.setSliders();
+});
+
+function addSwatch(clr) {
+  clr = toRGBA(clr);
+  const sw = document.createElement("div");
+  sw.className = "sw-color";
+  sw.style.color = clr;
+  sw.dataset.color = clr;
+  swContainer.append(sw);
+
+  sw.addEventListener("click", function() {
+    color.update(clr);
+    color.pick(clr);
+    color.setSlider();
+  });
+}
+
+document.querySelector(".add-fav").addEventListener("click", function() {
+  fetch("/addfav", {
+    method : "POST",
+    headers: {
+      'Content-Type': 'application/json'
+   },
+    body : JSON.stringify({
+      color: color.rgba
+    })
+  })
+  // .then(res => res.text())
+  // .then(console.log);
+});
+
+// for (let i = 0; i < 100; i++) {
+//   const clr = `rgb(${Math.random() *255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+//   addSwatch(clr);
+// }
