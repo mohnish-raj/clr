@@ -1,4 +1,9 @@
 preview
 picker
+  change color
 entry box
+  change color
+  set sliders
 fav cols
+  show in swatches
+  add to db
