@@ -65,6 +65,6 @@ app.delete("/deleteswatch/:id", (req, res) => {
   res.send();
 });
 
-server.listen(5500, () => {
+server.listen(process.env.PORT || 5500, () => {
   console.log("running on https://localhost:5500");
 });

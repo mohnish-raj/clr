@@ -13,14 +13,17 @@ body {
   width: 100vw;
   padding: 1rem;
   display: grid;
-  grid-template-rows: 2fr 1fr 1fr;
-}
-
-body > div {
-  width: calc(100vw - 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(300pt, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(200pt, 1fr));
+  gap: 1rem;
 }
 
 // * {border: 1pt solid red}
+
+body > div:not(.preview) {
+  padding: 1rem;
+  border: 1px solid black;
+}
 
 .preview {
   padding: 1rem;
@@ -36,9 +39,9 @@ body > div {
   gap: .5rem;
   
   > input[type="range"] {
-    &:nth-child(1) { accent-color: red }
-    &:nth-child(2) { accent-color: green }
-    &:nth-child(3) { accent-color: blue }
+    &:nth-child(1) { accent-color: #eb4343 }
+    &:nth-child(2) { accent-color: #50bf10 }
+    &:nth-child(3) { accent-color: #4848dc }
     &:nth-child(4) { accent-color: grey }
   }
 }
@@ -57,20 +60,22 @@ body > div {
 
     > button {
       padding: 1rem;
-      
       display: grid;
       place-items: center;
       border: 0;
-      outline: none;
       cursor: pointer;
       border-radius: .2rem;
+      outline: black solid 1pt;
+      outline-offset: -2pt;
+      transition: 300ms;
 
       &:hover {
-        filter: brightness(.9);
+        outline-offset: 2pt;
       }
 
-      &:active {
-        filter: brightness(.8);
+      &.active {
+        outline-offset: 2pt;
+        filter: brightness(.9);
       }
     }
   }
@@ -85,6 +90,8 @@ body > div {
     overflow: scroll;
     gap: 1rem;
     padding: 1rem;
+    border-top: 1px solid black;
+    margin-top: 1rem;
 
     .sw-color {
       height: 2rem;
